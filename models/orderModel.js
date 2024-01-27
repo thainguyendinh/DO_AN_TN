@@ -28,7 +28,7 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ["Stripe", "VNPay", "CreditCard","COD"],
+      enum: ["Paypal", "VNPay", "CreditCard","COD"],
       required: true,
     },
     paymentStatus: {

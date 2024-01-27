@@ -81,10 +81,10 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
-  // Hash the password with cost of 12
+  // Mã hoá mật khẩu
   this.password = await bcrypt.hash(this.password, 12);
 
-  // Delete passwordConfirm field
+  // Xóa phần Xác nhận mật khẩu
   this.passwordConfirm = undefined;
   next();
 });
@@ -113,7 +113,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return JWTTimestamp < changedTimestamp;
   }
 
-  // False means NOT changed
+  // Mật khẩu chưa thay đổi
   return false;
 };
 
@@ -128,6 +128,19 @@ userSchema.methods.createPasswordResetToken = function () {
   console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+};
+
+userSchema.methods.createPhoneResetToken = function () {
+  const resetToken = crypto.randomBytes(6).toString('hex'); 
+
+  this.phoneResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.phoneResetExpires = Date.now() + 10 * 60 * 1000; 
 
   return resetToken;
 };
